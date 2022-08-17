@@ -1,8 +1,10 @@
 package server
 
 import (
-	"github.com/sandertv/gophertunnel/minecraft/protocol/login"
+	"log"
 	"net"
+
+	"github.com/sandertv/gophertunnel/minecraft/protocol/login"
 )
 
 // Allower may be implemented to specifically allow or disallow players from joining a Server, by setting the specific
@@ -19,6 +21,7 @@ type Allower interface {
 type allower struct{}
 
 // Allow always returns true.
-func (allower) Allow(net.Addr, login.IdentityData, login.ClientData) (string, bool) {
+func (allower) Allow(a net.Addr, d login.IdentityData, c login.ClientData) (string, bool) {
+	log.Printf("User:%s form:%s Xuid:%s Identity:%s", d.DisplayName, a.String(), d.XUID, d.Identity)
 	return "", true
 }
