@@ -4,6 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
+	"net"
+	"sync"
+	"time"
+
 	"github.com/df-mc/atomic"
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/block/cube"
@@ -21,10 +26,6 @@ import (
 	"github.com/sandertv/gophertunnel/minecraft/protocol/login"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
 	"github.com/sandertv/gophertunnel/minecraft/text"
-	"io"
-	"net"
-	"sync"
-	"time"
 )
 
 // Session handles incoming packets from connections and sends outgoing packets by providing a thin layer
@@ -214,6 +215,7 @@ func (s *Session) Spawn(c Controllable, pos mgl64.Vec3, w *world.World, gm world
 // Start makes the session start handling incoming packets from the client.
 func (s *Session) Start() {
 	s.c.World().AddEntity(s.c)
+	// s.log.Debugf("start servering ")
 	go s.handlePackets()
 }
 
@@ -405,7 +407,9 @@ func (s *Session) changeDimension(dim int32, silent bool) {
 // handlePacket handles an incoming packet, processing it accordingly. If the packet had invalid data or was
 // otherwise not valid in its context, an error is returned.
 func (s *Session) handlePacket(pk packet.Packet) error {
-	handler, ok := s.handlers[pk.ID()]
+	// s.log.Debugf("handle session packet")
+	handler, ok := s.handlers[pk.ID()] // 不同的packet用不同的handlers处理
+	// s.log.Debugf("get handler")
 	if !ok {
 		s.log.Debugf("unhandled packet %T%v from %v\n", pk, fmt.Sprintf("%+v", pk)[1:], s.conn.RemoteAddr())
 		return nil
@@ -414,7 +418,9 @@ func (s *Session) handlePacket(pk packet.Packet) error {
 		// A nil handler means it was explicitly unhandled.
 		return nil
 	}
+	// s.log.Debugf("execute handle %T, %+v", s.handlers[pk.ID()], s.handlers[pk.ID()])
 	if err := handler.Handle(pk, s); err != nil {
+		// s.log.Debugf("error %T: %w", pk, err)
 		return fmt.Errorf("%T: %w", pk, err)
 	}
 	return nil

@@ -2,12 +2,13 @@ package session
 
 import (
 	"fmt"
+	"math"
+
 	"github.com/df-mc/dragonfly/server/block/cube"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/sandertv/gophertunnel/minecraft/protocol"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
-	"math"
 )
 
 // PlayerAuthInputHandler handles the PlayerAuthInput packet.
@@ -15,8 +16,11 @@ type PlayerAuthInputHandler struct{}
 
 // Handle ...
 func (h PlayerAuthInputHandler) Handle(p packet.Packet, s *Session) error {
+	// s.log.Debugf("before handle it")
 	pk := p.(*packet.PlayerAuthInput)
+	// s.log.Debugf("try handle %T", pk)
 	if err := h.handleMovement(pk, s); err != nil {
+		// s.log.Debugf("handle movement error %w", err)
 		return err
 	}
 	return h.handleActions(pk, s)

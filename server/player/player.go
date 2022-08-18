@@ -900,9 +900,10 @@ func (p *Player) dropContents() {
 		ent.SetVelocity(mgl64.Vec3{rand.Float64()*0.2 - 0.1, 0.2, rand.Float64()*0.2 - 0.1})
 		w.AddEntity(ent)
 	}
-	p.inv.Clear()
-	p.armour.Clear()
-	p.offHand.Clear()
+	// 暂时只掉落经验
+	// p.inv.Clear()
+	// p.armour.Clear()
+	// p.offHand.Clear()
 	p.experience.Reset()
 	p.session().SendExperience(p.experience)
 }

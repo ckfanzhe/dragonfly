@@ -23,5 +23,30 @@ type allower struct{}
 // Allow always returns true.
 func (allower) Allow(a net.Addr, d login.IdentityData, c login.ClientData) (string, bool) {
 	log.Printf("User:%s form:%s Xuid:%s Identity:%s", d.DisplayName, a.String(), d.XUID, d.Identity)
-	return "", true
+	info := "没有权限登录，请联系管理员！"
+	permit := false
+	if checkallow(d.XUID) {
+		info = "登录成功！"
+		permit = true
+	}
+	return info, permit
+}
+
+func checkallow(xuid string) bool {
+	xuid_list := []string{
+		"2535441176471440", // xuekuilei2022
+		"2535468093794442", // KuChaZi5467
+		"2535423732992577", // mmyy13
+		"2535419280628438", // liubai0003
+		"2535466795063605", // Yonezu S
+		"2535417232763992", // BladedAlarm7206
+		"2535415141730477", // RivalStone74010
+		"2535414938543844", // ifanzhe
+	}
+	for _, user := range xuid_list {
+		if user == xuid {
+			return true
+		}
+	}
+	return false
 }

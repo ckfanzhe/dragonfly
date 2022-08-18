@@ -36,7 +36,20 @@ var (
 	// world and cannot be seen by other players. spectator players can fly, like creative mode, and can
 	// move through blocks.
 	GameModeSpectator spectator
+	// 创建一个用于建筑的生存模式
+	GameModeBuild build
 )
+
+type build struct{}
+
+// 建筑模式允许飞行
+func (build) AllowsEditing() bool      { return true }
+func (build) AllowsTakingDamage() bool { return true }
+func (build) CreativeInventory() bool  { return false }
+func (build) HasCollision() bool       { return true }
+func (build) AllowsFlying() bool       { return true }
+func (build) AllowsInteraction() bool  { return true }
+func (build) Visible() bool            { return true }
 
 // survival is the survival game mode: Players with this game mode have limited supplies and can break blocks after
 // taking some time.

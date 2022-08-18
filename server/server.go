@@ -6,6 +6,17 @@ import (
 	_ "embed"
 	"encoding/base64"
 	"fmt"
+	"math/rand"
+	"os"
+	"os/exec"
+	"os/signal"
+	"path/filepath"
+	"runtime"
+	"strings"
+	"sync"
+	"syscall"
+	"time"
+
 	"github.com/df-mc/atomic"
 	"github.com/df-mc/dragonfly/server/block"
 	"github.com/df-mc/dragonfly/server/cmd"
@@ -34,16 +45,6 @@ import (
 	"github.com/sandertv/gophertunnel/minecraft/text"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/exp/maps"
-	"math/rand"
-	"os"
-	"os/exec"
-	"os/signal"
-	"path/filepath"
-	"runtime"
-	"strings"
-	"sync"
-	"syscall"
-	"time"
 )
 
 // Server implements a Dragonfly server. It runs the main server loop and handles the connections of players
@@ -159,13 +160,16 @@ func (srv *Server) Accept(f HandleFunc) bool {
 	}
 	p := s.Controllable().(*player.Player)
 	if f != nil {
+		// srv.log.Debugf("Do handleFunc for player")
 		f(p)
 	}
 
 	srv.playerMutex.Lock()
+	// srv.log.Debugf("adding play to p slice")
 	srv.p[p.UUID()] = p
 	srv.playerMutex.Unlock()
 
+	// srv.log.Debugf("try start handle incoming package")
 	s.Start()
 	return true
 }
